@@ -30,7 +30,11 @@ File upload supports drag&drop, progress bar, pause and resume. Upload is chunke
 </p>
 
 
-## Sponsors
+## Sponsors & Backers
+FileGator is a free, open-source project. It's an independent project with its ongoing development made possible entirely thanks to the support by these awesome [backers](https://github.com/filegator/filegator/blob/master/BACKERS.md). If you'd like to join them, please consider:
+
+- [Become a backer or sponsor on Patreon](https://www.patreon.com/alcalbg).
+
 <table>
   <tbody>
     <tr>
@@ -45,8 +49,8 @@ File upload supports drag&drop, progress bar, pause and resume. Upload is chunke
         </a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://www.ticksel.com/?utm_campaign=Sponsored%20GitHub%20FileGator" target="_blank">
-          <img title="Friendly website analytics made for humans" width="177px" src="https://interactive32.com/images/ticksel.png">
+        <a href="https://correctme.app/?utm_campaign=Sponsored%20GitHub%20FileGator" target="_blank">
+          <img title="Free Online Grammar and Spell Checker" width="177px" src="https://correctme.app/logo.png">
         </a>
       </td>
       <td align="center" valign="middle">
@@ -94,7 +98,7 @@ This is read-only demo with guest account enabled.
 
 
 ## Minimum Requirements
-- PHP 7.1.3+ (with php-zip extension)
+- PHP 7.2.5+ (with php-zip extension)
 
 See [install instructinos](https://docs.filegator.io/install.html) for Ubuntu 18.04 or Debian 10.3. Get $100 in ([server credits here](https://m.do.co/c/93994ebda78d)) so you can play around.
 

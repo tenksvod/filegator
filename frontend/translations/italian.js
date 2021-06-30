@@ -45,7 +45,7 @@ const data = {
   'Role': 'Ruolo',
   'Cancel': 'Annulla',
   'Paused': 'Sospeso',
-  'Confirm': 'Elimina',
+  'Confirm': 'Conferma',
   'Create': 'Crea',
   'User': 'Utente',
   'Admin': 'Amministratore',
@@ -74,6 +74,7 @@ const data = {
   'Search': 'Cerca',
   'Download permission': 'Scarica',
   'Guest': 'Guest',
+  'Show hidden': 'Mostra nascosto',
 }
 
 export default data

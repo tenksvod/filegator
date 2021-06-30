@@ -9,7 +9,7 @@
                 <b-icon :icon="progressVisible ? 'angle-down' : 'angle-up'" />
               </a>
               <span v-if="activeUploads">
-                {{ lang('Uploading files', Math.round(resumable.progress()*100), formatBytes(resumable.getSize())) }}
+                {{ lang('Uploading files', resumable.getSize() > 0 ? Math.round(resumable.progress()*100) : 100, formatBytes(resumable.getSize())) }}
               </span>
               <span v-if="activeUploads && paused">
                 ({{ lang('Paused') }})
@@ -34,7 +34,7 @@
             <div>
               <div>{{ file.relativePath != '/' ? file.relativePath : '' }}/{{ file.fileName }}</div>
               <div class="is-flex is-justify-between">
-                <progress :class="[file.file.uploadingError ? 'is-danger' : 'is-primary', 'progress is-large']" :value="file.progress()*100" max="100" />
+                <progress :class="[file.file.uploadingError ? 'is-danger' : 'is-primary', 'progress is-large']" :value="file.size > 0 ? file.progress()*100 : 100" max="100" />
                 <a v-if="! file.isUploading() && file.file.uploadingError" class="progress-icon" @click="file.retry()">
                   <b-icon icon="redo" type="is-danger" />
                 </a>
@@ -71,15 +71,12 @@ export default {
   },
   computed: {
     activeUploads() {
-      return this.resumable.files.length && this.resumable.progress() < 1
+      return this.resumable.files.length > 0 && this.resumable.progress() < 1
     },
   },
   watch: {
     'files' (files) {
-      this.visible = true
-      this.progressVisible = true
       _.forEach(files, file => {
-        file.relativePath = this.$store.state.cwd.location
         this.resumable.addFile(file)
       })
     },
@@ -92,6 +89,7 @@ export default {
       },
       withCredentials: true,
       simultaneousUploads: this.$store.state.config.upload_simultaneous,
+      minFileSize: 0,
       chunkSize: this.$store.state.config.upload_chunk_size,
       maxFileSize: this.$store.state.config.upload_max_size,
       maxFileSizeErrorCallback: (file) => {
@@ -104,7 +102,7 @@ export default {
       }
     })
 
-    if (! this.resumable.support) {
+    if (!this.resumable.support) {
       this.$dialog.alert({
         type: 'is-danger',
         message: this.lang('Browser not supported.'),
@@ -112,11 +110,21 @@ export default {
       return
     }
 
-    this.resumable.on('fileAdded', () => {
-      if (! this.paused) {
+    this.resumable.assignDrop(document.getElementById('dropzone'))
+
+    this.resumable.on('fileAdded', (file) => {
+      this.visible = true
+      this.progressVisible = true
+
+      if(file.relativePath === undefined || file.relativePath === null || file.relativePath == file.fileName) file.relativePath = this.$store.state.cwd.location
+      else file.relativePath = [this.$store.state.cwd.location, file.relativePath].join('/').replace('//', '/').replace(file.fileName, '').replace(/\/$/, '')
+
+      if (!this.paused) {
         this.resumable.upload()
       }
+
     })
+
     this.resumable.on('fileSuccess', (file) => {
       file.file.uploadingError = false
       this.$forceUpdate()

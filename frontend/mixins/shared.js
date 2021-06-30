@@ -3,6 +3,7 @@ import moment from 'moment'
 import store from '../store.js'
 import api from '../api/api'
 import { Base64 } from 'js-base64'
+import _ from 'lodash'
 
 import english from '../translations/english'
 import spanish from '../translations/spanish'
@@ -20,6 +21,12 @@ import slovak from '../translations/slovak'
 import polish from '../translations/polish'
 import italian from '../translations/italian'
 import korean from '../translations/korean'
+import czech from '../translations/czech'
+import galician from '../translations/galician'
+import russian from '../translations/russian'
+import hungarian from '../translations/hungarian'
+import swedish from '../translations/swedish'
+import japanese from '../translations/japanese'
 
 const funcs = {
   methods: {
@@ -49,6 +56,12 @@ const funcs = {
         'polish': polish,
         'italian': italian,
         'korean': korean,
+        'czech': czech,
+        'galician': galician,
+        'russian': russian,
+        'hungarian': hungarian,
+        'swedish': swedish,
+        'japanese': japanese,
       }
 
       let language = store.state.config.language
@@ -134,13 +147,13 @@ const funcs = {
       return this.isText(name) || this.isImage(name)
     },
     isText(name) {
-      return this.hasExtension(name, store.state.config.editable ? store.state.config.editable : ['.txt'])
+      return this.hasExtension(name, store.state.config.editable)
     },
     isImage(name) {
       return this.hasExtension(name, ['.jpg', '.jpeg', '.gif', '.png', '.bmp', '.svg', '.tiff', '.tif'])
     },
     hasExtension(name, exts) {
-      return (new RegExp('(' + exts.join('|').replace(/\./g, '\\.') + ')$', 'i')).test(name)
+      return !_.isEmpty(exts) && (new RegExp('(' + exts.join('|').replace(/\./g, '\\.') + ')$', 'i')).test(name)
     },
     capitalize(string) {
       return string.charAt(0).toUpperCase() + string.slice(1)

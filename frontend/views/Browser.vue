@@ -8,7 +8,7 @@
 
     <Upload v-if="can('upload')" v-show="dropZone == false" :files="files" :drop-zone="dropZone" />
 
-    <b-upload v-if="dropZone && ! isLoading" multiple drag-drop @input="files = $event">
+    <b-upload v-if="dropZone && ! isLoading" multiple drag-drop>
       <b class="drop-info">{{ lang('Drop files to upload') }}</b>
     </b-upload>
 
@@ -90,7 +90,7 @@
                  :row-class="(row) => 'file-row type-'+row.type"
                  :checked-rows.sync="checked"
                  :loading="isLoading"
-                 :checkable="can('batchDownload') || can('write') || can('zip')"
+                 :checkable="can('batchdownload') || can('write') || can('zip')"
                  @contextmenu="rightClick"
         >
           <template slot-scope="props">
@@ -144,11 +144,17 @@
               </b-dropdown>
             </b-table-column>
           </template>
-
-          <template slot="bottom-left">
-            <span>{{ lang('Selected', checked.length, totalCount) }}</span>
-          </template>
         </b-table>
+
+        <section id="bottom-info" class="is-flex is-justify-between">
+          <div>
+            <span>{{ lang('Selected', checked.length, totalCount) }}</span>
+          </div>
+          <div v-if="(showAllEntries || hasFilteredEntries) ">
+            <input type="checkbox" id="checkbox" @click="toggleHidden">
+            <label for="checkbox"> {{ lang('Show hidden') }}</label>
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -181,6 +187,8 @@ export default {
       isLoading: false,
       defaultSort: ['data.name', 'asc'],
       files: [],
+      hasFilteredEntries: false,
+      showAllEntries: false,
     }
   },
   computed: {
@@ -217,7 +225,7 @@ export default {
       })
         .then(ret => {
           this.$store.commit('setCwd', {
-            content: ret.files,
+            content: this.filterEntries(ret.files),
             location: ret.location,
           })
           this.isLoading = false
@@ -234,13 +242,51 @@ export default {
     }
   },
   methods: {
+    toggleHidden() {
+      this.showAllEntries = !this.showAllEntries
+      this.loadFiles()
+      this.checked = []
+    },
+    filterEntries(files){
+      var filter_entries = this.$store.state.config.filter_entries
+      this.hasFilteredEntries = false
+      if (!this.showAllEntries && typeof filter_entries !== 'undefined' && filter_entries.length > 0){
+        let filteredFiles = []
+        _.forEach(files, (file) => {
+          let filterContinue = false
+          _.forEach(filter_entries, (ffilter_Entry) => {
+            if (typeof ffilter_Entry !== 'undefined' && ffilter_Entry.length > 0){
+              let filter_Entry = ffilter_Entry
+              let filterEntry_type = filter_Entry.endsWith('/')? 'dir':'file'
+              filter_Entry = filter_Entry.replace(/\/$/, '')
+              let filterEntry_isFullPath = filter_Entry.startsWith('/')
+              let filterEntry_tmpName  = filterEntry_isFullPath? '/'+file.path : file.name
+              filter_Entry             = filterEntry_isFullPath? '/'+filter_Entry : filter_Entry
+              filter_Entry = filter_Entry.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.$&')
+              let thisRegex = new RegExp('^'+filter_Entry+'$', 'iu')
+              if(file.type == filterEntry_type && thisRegex.test(filterEntry_tmpName))
+              {
+                filterContinue = true
+                this.hasFilteredEntries = true
+                return false
+              }
+            }
+          })
+          if(!filterContinue){
+            filteredFiles.push(file)
+          }
+        })
+        return filteredFiles
+      }
+      return files
+    },
     loadFiles() {
       api.getDir({
         to: '',
       })
         .then(ret => {
           this.$store.commit('setCwd', {
-            content: ret.files,
+            content: this.filterEntries(ret.files),
             location: ret.location,
           })
         })
@@ -536,20 +582,17 @@ export default {
       return this.customSort(a, b, !order, 'time')
     },
     customSort(a, b, order, param) {
-      // TODO: firefox is broken
-      if (b.type == 'back') return 1
       if (a.type == 'back') return -1
-      if (b.type == 'dir' && a.type == 'dir') {
-        return (a[param] < b[param]) || order ? -1 : 1
-      } else if (b.type == 'dir') {
-        return 1
-      } else if (a.type == 'dir') {
-        return -1
-      }
-      if (_.isString(a[param])) {
-        return (_.lowerCase(a[param]) < _.lowerCase(b[param])) || order ? -1 : 1
-      } else {
-        return (a[param] < b[param]) || order ? -1 : 1
+      if (b.type == 'back') return 1
+
+      if (a.type == 'dir' && b.type != 'dir') return -1
+      if (b.type == 'dir' && a.type != 'dir') return 1
+
+      if (b.type == a.type) {
+        if (a[param] === b[param]) return this.customSort(a, b, false, 'name')
+
+        if (_.isString(a[param])) return (a[param].localeCompare(b[param])) * (order ? -1 : 1)
+        else return ((a[param] < b[param]) ? -1 : 1) * (order ? -1 : 1)
       }
     },
   }
@@ -586,8 +629,14 @@ export default {
 #multi-actions a {
   margin: 0 15px 15px 0;
 }
+#bottom-info {
+  padding: 15px 0;
+}
 .file-row a {
   color: #373737;
+}
+.file-row a.name {
+  word-break: break-all;
 }
 .file-row.type-dir a.name {
   font-weight: bold

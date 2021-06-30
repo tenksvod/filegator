@@ -63,7 +63,7 @@ const data = {
   'Invalid directory': 'Carpeta incorrecta',
   'This field is required': 'Este campo es obligatorio',
   'Username already taken': 'El nombre de usuario ya existe',
-  'User not found': 'Usuario no encontrad',
+  'User not found': 'Usuario no encontrado',
   'Old password': 'Contraseña anterior',
   'New password': 'Nueva contraseña',
   'Wrong password': 'Contraseña incorrecta',
@@ -74,6 +74,7 @@ const data = {
   'Search': 'Search',
   'Download permission': 'Descargar',
   'Guest': 'Guest',
+  'Show hidden': 'Mostrar oculto',
 }
 
 export default data

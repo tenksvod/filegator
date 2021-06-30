@@ -134,6 +134,7 @@ class Filesystem implements Service
         return [
             'filename' => $this->getBaseName($path),
             'stream' => $this->storage->readStream($path),
+            'filesize' => $this->storage->getSize($path),
         ];
     }
 
@@ -234,8 +235,11 @@ class Filesystem implements Service
 
     private function applyPathPrefix(string $path): string
     {
-        if (strpos($path, '..') !== false) {
-            $path = "/";
+        if ($path == '..'
+            || strpos($path, '..'.$this->separator) !== false
+            || strpos($path, $this->separator.'..') !== false
+        ) {
+            $path = $this->separator;
         }
         return $this->joinPaths($this->getPathPrefix(), $path);
     }

@@ -2,7 +2,47 @@
 
 ## Upcoming...
 
+## 7.5.2 - 2021-06-24
+
+* Composer update
+* Flysystem patch GHSA-9f46-5r25-5wfm
+* Min supported PHP version is now 7.2.5
+
+## 7.5.1 - 2021-03-23
+
+* New csrf token key config option added
+* Ldap adapter improvements, new config param for attributes, pr #184 (Thanks @lzkill)
+* Logger added to security service, fixes #183
+* Japanese translation added (Thanks @tubuanha)
+* Two consecutive periods bugfix for #202
+* Axios auto-transform json turned off, fixes #201
+
+## 7.5.0 - 2021-02-05
+
+* Show filesize and remaining time on download #181 (Thanks @ahaenggli)
+* Min supported PHP version is now 7.2
+
+## 7.4.7 - 2021-01-13
+
+* New feature - hiding files/folders on front-end, fixes #76 (Thanks @ahaenggli)
+* Fixes #135 (Thanks @ahaenggli)
+* Fixes #153 (Thanks @Gui13)
+* Fixes #163
+* Swedish language added #174 (Thanks leifa71)
+
+## 7.4.6 - 2020-11-02
+
+* New feature - upload folder with drag&drop, fixes #25 (Thanks @ahaenggli)
+* New LDAP auth adapter (Thanks @ahaenggli)
+* Fixes #17 (Thanks @ahaenggli)
+* Hungarian translation added (Thanks zsolti19850610)
+
+## 7.4.5 - 2020-10-12
+
+* New config: 'download_inline' #141 (download configured extensions inline in the browser)
 * Korean language added #119 (Thanks Jinhee-Kim)
+* Galician language added #126 (Thanks vinpoloaire)
+* Russian language added #128 (Thanks BagriyDmitriy)
 
 ## 7.4.4 - 2020-07-28 [Security]
 
